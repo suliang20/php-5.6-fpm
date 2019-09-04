@@ -13,8 +13,8 @@ FROM php:5.6-fpm
 # Must install dependencies for your extensions manually, if need.
 RUN \
     export mc="-j$(nproc)" \
-    && export http_proxy="http://suliang20:06jLfjME@144.202.85.250:3128" \
-    && export https_proxy="http://suliang20:06jLfjME@144.202.85.250:3128" \
+#    && export http_proxy="http://suliang20:06jLfjME@144.202.85.250:3128" \
+#    && export https_proxy="http://suliang20:06jLfjME@144.202.85.250:3128" \
     && apt-get update \
     && apt-get install -y \
         # for iconv mcrypt
@@ -116,25 +116,7 @@ RUN \
     && docker-php-ext-install $mc sysvsem \
     && docker-php-ext-install $mc sysvshm \
 
-    # Install PECL extensions
-
-    # for redis
-    && pecl install redis-4.0.1 && docker-php-ext-enable redis \
-
-    # for gearman 5.6
-    && pecl install gearman && docker-php-ext-enable gearman \
-
-    # for imagick require PHP version 5.6
-    && pecl install imagick-3.4.3 && docker-php-ext-enable imagick \
-
-    # for memcached require PHP version 5.6
-    && pecl install memcached-2.2.0 && docker-php-ext-enable memcached \
-
-    # for mcrypt require PHP version 5.6
-    && docker-php-ext-install $mc mcrypt \
-
-    # for mongodb 5.6
-    && pecl install mongodb-1.2.2 && echo "extension=mongodb.so" >> /usr/local/etc/php/conf.d/mongodb.ini \
+#    # Install PECL extensions
 
     # 增加 odbc, pdo_odbc 扩展
     && set -ex \
@@ -155,6 +137,29 @@ RUN \
     #for opcache php5.6
     docker-php-ext-configure opcache --enable-opcache && docker-php-ext-install $mc opcache \
 
+    && apt-get clean all \
+    && rm -rf /var/lib/apt/lists/*  \
+    && rm -rf /tmp/* \
+    && rm -rf /var/tmp/* \
+
+    # for redis
+    && pecl install redis-4.0.1 && docker-php-ext-enable redis \
+
+    # for gearman 5.6
+    && pecl install gearman && docker-php-ext-enable gearman \
+
+    # for imagick require PHP version 5.6
+    && pecl install imagick-3.4.3 && docker-php-ext-enable imagick \
+
+    # for memcached require PHP version 5.6
+    && pecl install memcached-2.2.0 && docker-php-ext-enable memcached \
+
+    # for mcrypt require PHP version 5.6
+    && docker-php-ext-install $mc mcrypt \
+
+    # for mongodb 5.6
+    && pecl install mongodb-1.2.2 && echo "extension=mongodb.so" >> /usr/local/etc/php/conf.d/mongodb.ini \
+
     # for xedug php5.6
     && set -ex \
     && docker-php-source extract \
@@ -165,21 +170,18 @@ RUN \
     && docker-php-ext-enable xdebug \
     && docker-php-source delete \
 
-    # swoole require php5.6
-    && set -ex \
-    && docker-php-source extract \
-    && curl -fsSL 'https://pecl.php.net/get/swoole-2.0.11.tgz' -o swoole-2.0.11.tgz \
-    && mkdir swoole \
-    && tar -xf swoole-2.0.11.tgz -C swoole --strip-components=1 \
-    && cd swoole && phpize && ./configure && make && make install \
-    && docker-php-ext-enable swoole \
-    && docker-php-source delete \
+#    # swoole require php5.6
+#    && set -ex \
+#    && docker-php-source extract \
+#    && curl -fsSL 'https://pecl.php.net/get/swoole-2.0.11.tgz' -o swoole-2.0.11.tgz \
+#    && mkdir swoole \
+#    && tar -xf swoole-2.0.11.tgz -C swoole --strip-components=1 \
+#    && cd swoole && phpize && ./configure && make $mc && make install \
+#    && docker-php-ext-enable swoole \
+#    && docker-php-source delete \
 
-    && apt-get clean all \
-    && rm -rf /var/lib/apt/lists/*  \
-    && rm -rf /tmp/* \
-    && rm -rf /var/tmp/* \
     && echo 'PHP 5.6 extension installed.'
+    
 
 ## install composer
 #RUN curl -sS https://getcomposer.org/installer | php -- --filename=composer --install-dir=/bin
