@@ -13,8 +13,6 @@ FROM php:5.6-fpm
 # Must install dependencies for your extensions manually, if need.
 RUN \
     export mc="-j$(nproc)" \
-#    && export http_proxy="http://suliang20:06jLfjME@144.202.85.250:3128" \
-#    && export https_proxy="http://suliang20:06jLfjME@144.202.85.250:3128" \
     && apt-get update \
     && apt-get install -y \
         # for iconv mcrypt
